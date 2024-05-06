@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+# change chdir
+cd /config
+
+s6-setuidgid $PUID:$PGID /app/znc --datadir=/config "$@"
