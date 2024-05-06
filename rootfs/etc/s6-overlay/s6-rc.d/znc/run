@@ -4,4 +4,4 @@
 cd /config
 
 # run (from /usr/local/bin) with limited permissions
-exec s6-setuidgid $PUID:$PGID znc --foreground
+exec znc --foreground
