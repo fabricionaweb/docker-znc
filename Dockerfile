@@ -14,16 +14,18 @@ ADD https://github.com/znc/znc.git#${BRANCH:-znc-$VERSION} ./
 FROM base AS build-app
 
 # build dependencies
-RUN apk add --no-cache build-base cmake swig python3-dev perl-dev argon2-dev \
-    openssl-dev cyrus-sasl-dev c-ares-dev gettext-dev icu-dev
+RUN apk add --no-cache build-base cmake ninja \
+    cyrus-sasl-dev tcl-dev perl-dev python3-dev argon2-dev \
+    openssl-dev c-ares-dev gettext-dev icu-dev swig
 
 # copy source
 COPY --from=source /src ./
 
 # build
-ENV DESTDIR=/build
-RUN ./configure --prefix=/usr --enable-argon --enable-python && \
-    make && make install && \
+ENV CFLAGS="-D_GNU_SOURCE" CXXFLAGS="-Wno-deprecated-declarations"
+RUN cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWANT_CYRUS=YES -DWANT_TCL=YES -DWANT_PERL=YES -DWANT_PYTHON=YES -DWANT_ARGON=YES && \
+    ninja && DESTDIR=/build ninja install && \
     strip /build/usr/bin/znc
 
 # runtime stage ================================================================
