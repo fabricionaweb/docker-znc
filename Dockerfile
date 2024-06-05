@@ -22,10 +22,17 @@ RUN apk add --no-cache build-base cmake ninja \
 COPY --from=source /src ./
 
 # build
+ENV DESTDIR=/build
 ENV CFLAGS="-D_GNU_SOURCE" CXXFLAGS="-Wno-deprecated-declarations"
-RUN cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr \
-    -DWANT_CYRUS=YES -DWANT_TCL=YES -DWANT_PERL=YES -DWANT_PYTHON=YES -DWANT_ARGON=YES && \
-    ninja && DESTDIR=/build ninja install && \
+RUN cmake -GNinja \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWANT_CYRUS=YES \
+        -DWANT_TCL=YES \
+        -DWANT_PERL=YES \
+        -DWANT_PYTHON=YES \
+        -DWANT_ARGON=YES && \
+    ninja && \
+    ninja install && \
     strip /build/usr/bin/znc
 
 # runtime stage ================================================================
